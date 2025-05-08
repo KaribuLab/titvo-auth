@@ -1,4 +1,4 @@
-import { AppError } from "@shared/app/app.error"
+import { AppError } from "@titvo/shared"
 
 /**
   constructor (message: string) {

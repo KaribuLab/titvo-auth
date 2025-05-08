@@ -18,14 +18,12 @@
       ],
       "@app/*": [
         "./src/app/*"
-      ],
-      "@shared/*": [
-        "./shared/src/*"
       ]
     }
   },
   "include": [
     "src/**/*.ts",
+    "index.ts",
     "test/**/*.ts"
   ],
   "exclude": [
