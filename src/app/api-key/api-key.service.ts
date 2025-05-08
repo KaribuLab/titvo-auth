@@ -1,21 +1,21 @@
 import { Injectable, Logger } from '@nestjs/common'
-import { ApiKeyNotFoundError, NoAuthorizedApiKeyError } from '@app/api-key/api-key.error'
-import { ApiKeyRepository } from '@core/api-key/api-key.repository'
+import { ApiKeyNotFoundError, NoAuthorizedApiKeyError } from '@auth/app/api-key/api-key.error'
+import { ApiKeyRepository } from '@auth/core/api-key/api-key.repository'
 import { createHash } from 'crypto'
-import { ApiKeyEntity } from '@core/api-key/api-key.entity'
+import { ApiKeyEntity } from '@auth/core/api-key/api-key.entity'
 @Injectable()
 export class ValidateApiKeyUseCase {
   private readonly logger = new Logger(ValidateApiKeyUseCase.name)
 
-  constructor(
+  constructor (
     private readonly apiKeyRepository: ApiKeyRepository
   ) { }
 
-  private isSha256(apiKey: string): boolean {
+  private isSha256 (apiKey: string): boolean {
     return /^[a-fA-F0-9]{64}$/.test(apiKey)
   }
 
-  async execute(apiKey: string | undefined): Promise<ApiKeyEntity> {
+  async execute (apiKey: string | undefined): Promise<ApiKeyEntity> {
     if (apiKey === undefined) {
       throw new ApiKeyNotFoundError('API key not found')
     }
