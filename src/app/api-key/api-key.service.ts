@@ -3,16 +3,22 @@ import { ApiKeyNotFoundError, NoAuthorizedApiKeyError } from '@auth/app/api-key/
 import { ApiKeyRepository } from '@auth/core/api-key/api-key.repository'
 import { createHash } from 'crypto'
 import { ApiKeyEntity } from '@auth/core/api-key/api-key.entity'
+import { AesService } from '@titvo/shared'
 @Injectable()
 export class ValidateApiKeyUseCase {
   private readonly logger = new Logger(ValidateApiKeyUseCase.name)
 
   constructor (
-    private readonly apiKeyRepository: ApiKeyRepository
+    private readonly apiKeyRepository: ApiKeyRepository,
+    private readonly aesService: AesService
   ) { }
 
   private isSha256 (apiKey: string): boolean {
     return /^[a-fA-F0-9]{64}$/.test(apiKey)
+  }
+
+  private isEncrypted (apiKey: string): boolean {
+    return apiKey.startsWith('ENC:')
   }
 
   async execute (apiKey: string | undefined): Promise<ApiKeyEntity> {
@@ -20,8 +26,14 @@ export class ValidateApiKeyUseCase {
       throw new ApiKeyNotFoundError('API key not found')
     }
 
+    let rawApiKey = apiKey
+
+    if (this.isEncrypted(apiKey)) {
+      rawApiKey = await this.aesService.decrypt(apiKey.slice(4))
+    }
+
     // Hash the API key with SHA-256
-    const hashedApiKey = this.isSha256(apiKey) ? apiKey : createHash('sha256').update(apiKey).digest('hex')
+    const hashedApiKey = this.isSha256(rawApiKey) ? rawApiKey : createHash('sha256').update(rawApiKey).digest('hex')
 
     this.logger.debug(`Hashed API key: ${hashedApiKey}`)
 
