@@ -31,6 +31,7 @@ export class ValidateApiKeyUseCase {
     if (this.isEncrypted(apiKey)) {
       this.logger.debug('Decrypting API key')
       rawApiKey = await this.aesService.decrypt(apiKey.slice(4))
+      this.logger.debug(`Decrypted API key: ${rawApiKey.slice(0, 5)}...${rawApiKey.slice(-5)}`)
     }
 
     // Hash the API key with SHA-256
