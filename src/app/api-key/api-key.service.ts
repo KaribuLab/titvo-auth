@@ -31,13 +31,13 @@ export class ValidateApiKeyUseCase {
     if (this.isEncrypted(apiKey)) {
       this.logger.debug('Decrypting API key')
       rawApiKey = await this.aesService.decrypt(apiKey.slice(4))
-      this.logger.debug(`Decrypted API key: ${rawApiKey.slice(0, 5)}...${rawApiKey.slice(-5)}`)
+      this.logger.debug(`Decrypted API key: '${rawApiKey.slice(0, 5)}...${rawApiKey.slice(-5)}'`)
     }
 
     // Hash the API key with SHA-256
     const hashedApiKey = this.isSha256(rawApiKey) ? rawApiKey : createHash('sha256').update(rawApiKey).digest('hex')
 
-    this.logger.debug(`Hashed API key: ${hashedApiKey}`)
+    this.logger.debug(`Hashed API key: '${hashedApiKey}'`)
 
     // Find the API key in the repository
     const apiKeyRecord = await this.apiKeyRepository.findByApiKey(hashedApiKey)
