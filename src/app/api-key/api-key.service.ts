@@ -29,6 +29,7 @@ export class ValidateApiKeyUseCase {
     let rawApiKey = apiKey
 
     if (this.isEncrypted(apiKey)) {
+      this.logger.debug('Decrypting API key')
       rawApiKey = await this.aesService.decrypt(apiKey.slice(4))
     }
 
