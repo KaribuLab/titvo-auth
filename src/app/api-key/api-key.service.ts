@@ -43,6 +43,7 @@ export class ValidateApiKeyUseCase {
     const apiKeyRecord = await this.apiKeyRepository.findByApiKey(hashedApiKey)
 
     if (apiKeyRecord === null) {
+      this.logger.warn('No API key found for apiKey')
       throw new NoAuthorizedApiKeyError('API key is not authorized')
     }
 
