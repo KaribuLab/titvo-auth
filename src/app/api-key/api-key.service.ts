@@ -1,5 +1,4 @@
 import { Injectable, Logger } from '@nestjs/common'
-import { ApiKeyNotFoundError, NoAuthorizedApiKeyError } from '@auth/app/api-key/api-key.error'
 import { ApiKeyRepository } from '@auth/core/api-key/api-key.repository'
 import { createHash } from 'crypto'
 import { ApiKeyEntity } from '@auth/core/api-key/api-key.entity'
@@ -23,10 +22,10 @@ export class ValidateApiKeyUseCase {
 
   async execute (apiKey: string | undefined): Promise<ApiKeyEntity> {
     if (apiKey === undefined) {
-      throw new ApiKeyNotFoundError('API key not found')
+      throw Object.assign(new Error('API key not found'), { name: 'ApiKeyNotFoundError' })
     }
 
-    let rawApiKey = apiKey
+    let rawApiKey: string = apiKey
 
     if (this.isEncrypted(apiKey)) {
       this.logger.debug('Decrypting API key')
@@ -35,7 +34,7 @@ export class ValidateApiKeyUseCase {
     }
 
     // Hash the API key with SHA-256
-    const hashedApiKey = this.isSha256(rawApiKey) ? rawApiKey : createHash('sha256').update(rawApiKey).digest('hex')
+    const hashedApiKey: string = this.isSha256(rawApiKey) ? rawApiKey : createHash('sha256').update(rawApiKey).digest('hex')
 
     this.logger.debug(`Hashed API key: '${hashedApiKey}'`)
 
@@ -44,7 +43,7 @@ export class ValidateApiKeyUseCase {
 
     if (apiKeyRecord === null) {
       this.logger.warn('No API key found for apiKey')
-      throw new NoAuthorizedApiKeyError('API key is not authorized')
+      throw Object.assign(new Error('API key is not authorized'), { name: 'NoAuthorizedApiKeyError' })
     }
 
     return apiKeyRecord

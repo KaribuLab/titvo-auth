@@ -1,26 +1,20 @@
-import { AppError } from '@titvo/shared'
-
-/**
+export class InvalidApiKeyError extends Error {
   constructor (message: string) {
-
-/**
- * Error thrown when the provided API key is invalid for the user
- */
-export class InvalidApiKeyError extends AppError {
-  constructor (message: string) {
-    super('invalid-api-key', message)
+    super(message)
+    this.name = 'InvalidApiKeyError'
   }
 }
 
-export class ApiKeyNotFoundError extends AppError {
+export class ApiKeyNotFoundError extends Error {
   constructor (message: string) {
-    super('api-key-not-found', message)
+    super(message)
     this.name = 'ApiKeyNotFoundError'
   }
 }
 
-export class NoAuthorizedApiKeyError extends AppError {
+export class NoAuthorizedApiKeyError extends Error {
   constructor (message: string) {
-    super('no-authorized-api-key', message)
+    super(message)
+    this.name = 'NoAuthorizedApiKeyError'
   }
 }
