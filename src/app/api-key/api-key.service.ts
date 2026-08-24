@@ -46,6 +46,15 @@ export class ValidateApiKeyUseCase {
       throw Object.assign(new Error('API key is not authorized'), { name: 'NoAuthorizedApiKeyError' })
     }
 
+    // Backward compatibility (design D5): a MISSING `status` attribute
+    // means active — every installer-minted key in prod predates this
+    // field. Only an explicit 'revoked' rejects. Never check
+    // `status === 'active'`, that would break every legacy key.
+    if (apiKeyRecord.status === 'revoked') {
+      this.logger.warn('API key rejected: revoked')
+      throw Object.assign(new Error('API key is not authorized'), { name: 'NoAuthorizedApiKeyError' })
+    }
+
     return apiKeyRecord
   }
 }
